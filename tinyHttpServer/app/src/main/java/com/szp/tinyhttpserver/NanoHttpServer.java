@@ -3,6 +3,7 @@ package com.szp.tinyhttpserver;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
+import android.os.Handler;
 import android.util.Xml;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
@@ -25,8 +26,8 @@ import com.szp.tinyhttpserver.SharePreferenceUtils;
  */
 
 public class NanoHttpServer extends NanoHTTPD{
-    private AssetManager asset_mgr;
     private Context mContext;
+    private Handler mHandler;
     private final int MAX_FILE_SIZE = 2 * 1024 * 1024; //2M;
 
     private final String[] configPara =  new String[]{ Utils.ADDO_USER_ID, Utils.ADDO_PASSWORD, Utils.ADDO_VM_PASSWORD, Utils.ADDO_TOLL_ALLOW,
@@ -49,8 +50,12 @@ public class NanoHttpServer extends NanoHTTPD{
 
         LogUtils.e("NanoHttpServer", "*******  uri : "  + fileName + "  user : " + parms.get(Utils.HTTP_ADDO_USER) + "  id : " + parms.get(Utils.HTTP_ADDO_USERID));
 
-        if(fileName.isEmpty())
-            return null;
+        if(fileName.isEmpty()) {
+            msg = "<html><body><h1>httpServer</h1>\n";
+            msg += "<p>please  use login.html</p>";
+            msg += "</body></html>\n";
+            return Response.newFixedLengthResponse(msg);
+        }
 
         if((fileName.startsWith(Utils.HTTP_LOGIN)) && parms.get(Utils.HTTP_ADDO_USER) == null && parms.get(Utils.HTTP_ADDO_USERID) == null) {
             fileName = Utils.HTTP_LOGIN;
@@ -70,15 +75,8 @@ public class NanoHttpServer extends NanoHTTPD{
             fileName = Utils.HTTP_LOGIN;
         }
 
-        if(asset_mgr == null) {
-            msg = "<html><body><h1>httpServer</h1>\n";
-            msg += "<p>open file error 100</p>";
-            msg += "</body></html>\n";
-            return Response.newFixedLengthResponse(msg);
-        }
-
         try {
-            InputStream in = asset_mgr.open(fileName, AssetManager.ACCESS_BUFFER);
+            InputStream in =  mContext.getAssets().open(fileName, AssetManager.ACCESS_BUFFER);
 
             int temp;
             while((temp=in.read())!=-1){
@@ -95,12 +93,12 @@ public class NanoHttpServer extends NanoHTTPD{
         return Response.newFixedLengthResponse(msg);
     }
 
-    public void setAssetMgr(AssetManager am) {
-        asset_mgr = am;
-    }
-
     public void setContext(Context context) {
         mContext = context;
+    }
+
+    public void setHandler(Handler handler) {
+        mHandler = handler;
     }
 
     private void saveParamter(Map<String, String> parms) {
@@ -273,6 +271,5 @@ public class NanoHttpServer extends NanoHTTPD{
                 e.printStackTrace();
             }
         }
-
     }
 }

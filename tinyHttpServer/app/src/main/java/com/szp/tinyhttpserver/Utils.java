@@ -11,8 +11,8 @@ public class Utils {
     public static final String UserPassword = "8888";
     public static final String HTTP_LOGIN  = "login.html";
     public static final String HTTP_CONFIG = "Config.html";
-    public static final String HTTP_GET_XML_CONFIG = "getConfig.html";
-    public static final String CONFIG_XML = "1.xml";
+    public static final String HTTP_GET_XML_CONFIG = "getConfigXml";
+    public static final String CONFIG_XML = "config.xml";
 
     //login.html用来验证账号密码的input节点的id
     public static final String HTTP_ADDO_USER = "user";
@@ -33,4 +33,11 @@ public class Utils {
     public static final String ADDO_OUTBOUND_CALLER_ID_NAME = "outboundname";
     public static final String ADDO_OUTBOUND_CALLER_ID_NUMBER = "outboundnumber";
     public static final String ADDO_CALLGROUP = "group";
+
+    public static final int HTTP_OK = 1;
+    public static final int HTTP_FAIL = 0;
+
+    //for handle
+    public static final int MESSAGE_HTTP_STATUS = 1;
+
 }

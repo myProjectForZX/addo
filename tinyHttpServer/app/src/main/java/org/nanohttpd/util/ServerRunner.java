@@ -35,10 +35,12 @@ package org.nanohttpd.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.Handler;
+import android.os.Message;
 
 import com.szp.tinyhttpserver.LogUtils;
 import com.szp.tinyhttpserver.NanoHttpServer;
-import com.szp.tinyhttpserver.NotStartNanoServer;
+import com.szp.tinyhttpserver.Utils;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -53,21 +55,32 @@ public class ServerRunner {
      */
     private static final Logger LOG = Logger.getLogger(ServerRunner.class.getName());
 
-    public static void executeInstance(NanoHTTPD server, AssetManager am, Context context){
+    public static void executeInstance(NanoHTTPD server, Context context, Handler handler){
         if(HttpServer == null)
             HttpServer = server;
         else
             return;
 
+        boolean result = true;
+
         try {
             server.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         } catch (IOException ioe) {
             LogUtils.e("ServerRunner", "start nano http server error");
+            result = false;
         }
 
         if(server instanceof NanoHttpServer) {
-            ((NanoHttpServer) server).setAssetMgr(am);
             ((NanoHttpServer) server).setContext(context);
+            ((NanoHttpServer) server).setHandler(handler);
+        }
+
+        if(handler != null) {
+            Message msg = new Message();
+            msg.what = Utils.MESSAGE_HTTP_STATUS;
+            LogUtils.e("ZWY", "*********** resutl : " + result);
+            msg.arg1 = result ? Utils.HTTP_OK : Utils.HTTP_FAIL;
+            handler.sendMessage(msg);
         }
     }
 
@@ -77,9 +90,9 @@ public class ServerRunner {
         HttpServer = null;
     }
 
-    public static <T extends NanoHTTPD> void run(Class<T> serverClass, AssetManager am, Context context) {
+    public static <T extends NanoHTTPD> void run(Class<T> serverClass, Context context, Handler handler) {
         try {
-            executeInstance(serverClass.newInstance(), am, context);
+            executeInstance(serverClass.newInstance(),context, handler);
         } catch (Exception e) {
             ServerRunner.LOG.log(Level.SEVERE, "Could not create server", e);
         }
