@@ -69,6 +69,7 @@ public class NanoHttpServer extends NanoHTTPD{
                 && parms.get(Utils.HTTP_ADDO_USERID) != null){
             fileName = Utils.HTTP_LOGIN;
             saveParamter(parms);
+            GeneratorXmlFile(Utils.CONFIG_XML);
         } else if (fileName.startsWith(Utils.HTTP_GET_XML_CONFIG)){
             return Response.newFixedLengthResponse(getConfigXmlMsg());
         } else {

@@ -82,6 +82,6 @@ public class MainHttpServer extends AppCompatActivity {
             LogUtils.e("MainHttpServer", "SocketException");
             e.printStackTrace();
         }
-        return "http://" + hostIp + "/" + Utils.HTTP_PORT + "/" + Utils.HTTP_LOGIN;
+        return "http://" + hostIp + ":" + Utils.HTTP_PORT + "/" + Utils.HTTP_LOGIN;
     }
 }
