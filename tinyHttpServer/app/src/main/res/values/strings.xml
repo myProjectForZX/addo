@@ -1,7 +1,11 @@
 <resources>
-    <string name="app_name">tinyHttpServer</string>
+    <string name="app_name">ADDOSIP</string>
+
+    <string name="addo_title_account">SIP Account</string>
 
     <string name="show_information">please entery\r\n  %1$s\r\nin your browser, thanks</string>
 
     <string name="start_http_fail">start http failed!!!</string>
+
+    <string name="addo_download">Download</string>
 </resources>

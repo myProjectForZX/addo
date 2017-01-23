@@ -10,18 +10,35 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.szp.tinyhttpserver.MainHttpServer">
 
-    <TextView
-        android:id="@+id/show_information"
+    <Button
+        android:id="@+id/download_button"
+        android:text="@string/addo_download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_style" />
 
     <TextView
-        android:id="@+id/network_result"
+        android:id="@+id/addo_title"
+        android:text="@string/addo_title_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_alignBaseline="@+id/download_button"
+        android:layout_alignBottom="@+id/download_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="@dimen/addo_title_text_size"/>
+
+    <ListView
+        android:id="@+id/config_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/download_button"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_marginTop="28dp" />
 </RelativeLayout>

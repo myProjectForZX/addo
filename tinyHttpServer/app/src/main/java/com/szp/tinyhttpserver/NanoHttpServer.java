@@ -30,10 +30,6 @@ public class NanoHttpServer extends NanoHTTPD{
     private Handler mHandler;
     private final int MAX_FILE_SIZE = 2 * 1024 * 1024; //2M;
 
-    private final String[] configPara =  new String[]{ Utils.ADDO_USER_ID, Utils.ADDO_PASSWORD, Utils.ADDO_VM_PASSWORD, Utils.ADDO_TOLL_ALLOW,
-            Utils.ADDO_ACCOUNTCODE, Utils.ADDO_USER_CONTEXT, Utils.ADDO_EFFECTIVE_CALLER_ID_NAME, Utils.ADDO_EFFECTIVE_CALLER_ID_NUMBER, Utils.ADDO_OUTBOUND_CALLER_ID_NAME,
-            Utils.ADDO_OUTBOUND_CALLER_ID_NUMBER, Utils.ADDO_CALLGROUP};
-
     public NanoHttpServer() {
        super(Utils.HTTP_PORT);
     }
@@ -105,10 +101,14 @@ public class NanoHttpServer extends NanoHTTPD{
     private void saveParamter(Map<String, String> parms) {
         //userid password vmpassword tollallow accountcode context
         // calleridname caleridnumber outboundname outboundnumber group
-        for(String singleParam : configPara) {
-            if(parms.get(singleParam) != null) {
-                SharePreferenceUtils.put(mContext, singleParam, parms.get(singleParam));
+        for(String[] singleParam : Utils.configPara) {
+            if(parms.get(singleParam[1]) != null) {
+                SharePreferenceUtils.put(mContext, singleParam[1], parms.get(singleParam[1]));
             }
+        }
+        LogUtils.e("NanoHttpServer", "saveParamter mHandler : " + mHandler);
+        if(mHandler != null) {
+            mHandler.sendEmptyMessage(Utils.MESSAGE_REFRESH_DATA);
         }
     }
 
