@@ -28,7 +28,7 @@ public class Utils {
     public static final String UserPassword = "8888";
     public static final String HTTP_LOGIN  = "login.html";
     public static final String HTTP_CONFIG = "Config.html";
-    public static final String HTTP_GET_XML_CONFIG = "getConfigXml";
+    public static final String HTTP_GET_XML_CONFIG = "getConfigXml.html";
     public static final String CONFIG_XML = "config.xml";
 
     //login.html用来验证账号密码的input节点的id
@@ -84,6 +84,7 @@ public class Utils {
     //for handle
     public static final int MESSAGE_HTTP_STATUS = 1;
     public static final int MESSAGE_REFRESH_DATA = 2;
+    public static final int MESSAGE_DOWNLOAD_CONFIG_STATUS = 3;
 
     //for list view
     public static final String ITEM_NAME = "name";
@@ -99,4 +100,8 @@ public class Utils {
     public static final String TAG_PARAMS = "params";
     public static final String TAG_VARIABLES = "variables";
     public static final String TAG_VARIABLE = "variable";
+
+    public static final int MAX_FILE_SIZE = 2 * 1024 * 1024; //2M;
+
+    public static final String BASE_CONFIG_XML_URL = "";
 }

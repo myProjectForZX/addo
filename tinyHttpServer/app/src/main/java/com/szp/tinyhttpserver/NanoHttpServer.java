@@ -28,7 +28,7 @@ import com.szp.tinyhttpserver.SharePreferenceUtils;
 public class NanoHttpServer extends NanoHTTPD{
     private Context mContext;
     private Handler mHandler;
-    private final int MAX_FILE_SIZE = 2 * 1024 * 1024; //2M;
+
 
     public NanoHttpServer() {
        super(Utils.HTTP_PORT);
@@ -41,8 +41,7 @@ public class NanoHttpServer extends NanoHTTPD{
         Map<String, String> parms = session.getParms();
 
         String msg;
-        byte[] buffer = new byte[MAX_FILE_SIZE];
-        int len = 0;
+
 
         LogUtils.e("NanoHttpServer", "*******  uri : "  + fileName + "  user : " + parms.get(Utils.HTTP_ADDO_USER) + "  id : " + parms.get(Utils.HTTP_ADDO_USERID));
 
@@ -55,39 +54,25 @@ public class NanoHttpServer extends NanoHTTPD{
 
         if((fileName.startsWith(Utils.HTTP_LOGIN)) && parms.get(Utils.HTTP_ADDO_USER) == null && parms.get(Utils.HTTP_ADDO_USERID) == null) {
             fileName = Utils.HTTP_LOGIN;
-            GeneratorXmlFile(Utils.CONFIG_XML);
+            //GeneratorXmlFile(Utils.CONFIG_XML);
         } else if (fileName.startsWith(Utils.HTTP_LOGIN) && parms.get(Utils.HTTP_ADDO_USER) != null && parms.get(Utils.HTTP_ADDO_PASSWORD) != null
                 && parms.get(Utils.HTTP_ADDO_USER).equals(Utils.UserName)
                 && parms.get(Utils.HTTP_ADDO_PASSWORD).equals(Utils.UserPassword)) {
-            fileName = Utils.HTTP_CONFIG;
+            //fileName = Utils.HTTP_CONFIG;
+            return Response.newFixedLengthResponse(configHtml.getConfigHtml(mContext));
         } else if (fileName.startsWith(Utils.HTTP_LOGIN)
                 && parms.get(Utils.HTTP_ADDO_USER) == null
                 && parms.get(Utils.HTTP_ADDO_USERID) != null){
             fileName = Utils.HTTP_LOGIN;
             saveParamter(parms);
-            GeneratorXmlFile(Utils.CONFIG_XML);
+            //GeneratorXmlFile(Utils.CONFIG_XML);
         } else if (fileName.startsWith(Utils.HTTP_GET_XML_CONFIG)){
-            return Response.newFixedLengthResponse(getConfigXmlMsg());
+            return Response.newFixedLengthResponse(getStringFromFile("test.xml"));
         } else {
             fileName = Utils.HTTP_LOGIN;
         }
 
-        try {
-            InputStream in =  mContext.getAssets().open(fileName, AssetManager.ACCESS_BUFFER);
-
-            int temp;
-            while((temp=in.read())!=-1){
-                buffer[len]=(byte)temp;
-                len++;
-            }
-            in.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        msg = new String(buffer, 0, len);
-
-        return Response.newFixedLengthResponse(msg);
+        return Response.newFixedLengthResponse(getStringFromFile(fileName));
     }
 
     public void setContext(Context context) {
@@ -110,6 +95,26 @@ public class NanoHttpServer extends NanoHTTPD{
         if(mHandler != null) {
             mHandler.sendEmptyMessage(Utils.MESSAGE_REFRESH_DATA);
         }
+    }
+
+    private String getStringFromFile(String fileName) {
+        byte[] buffer = new byte[Utils.MAX_FILE_SIZE];
+        int len = 0;
+
+        try {
+            InputStream in =  mContext.getAssets().open(fileName, AssetManager.ACCESS_BUFFER);
+
+            int temp;
+            while((temp=in.read())!=-1){
+                buffer[len]=(byte)temp;
+                len++;
+            }
+            in.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return new String(buffer, 0, len);
     }
 
     private String getConfigXmlMsg() {

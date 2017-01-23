@@ -8,7 +8,7 @@ public class LogUtils {
     // Generic tag for all In Call logging
     public static final String TAG = "Nano";
 
-    public static final boolean FORCE_DEBUG = true;
+    public static final boolean FORCE_DEBUG = false;
     public static final boolean DEBUG = FORCE_DEBUG ||
             android.util.Log.isLoggable(TAG, android.util.Log.DEBUG);
     public static final boolean VERBOSE = FORCE_DEBUG ||

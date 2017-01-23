@@ -1,6 +1,7 @@
 package com.szp.tinyhttpserver;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,9 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.System.in;
 
 public class MainHttpServer extends AppCompatActivity {
     private Handler mHanlder = new myHandler();
@@ -95,18 +99,24 @@ public class MainHttpServer extends AppCompatActivity {
             switch (msg.what) {
                 case Utils.MESSAGE_HTTP_STATUS:
                     if(msg.arg1 == Utils.HTTP_OK) {
+
                     } else if (msg.arg1 == Utils.HTTP_FAIL) {
                     }
                     break;
                 case Utils.MESSAGE_REFRESH_DATA:
                     refreshData();
                     break;
+                case Utils.MESSAGE_DOWNLOAD_CONFIG_STATUS:
+                    if(msg.arg1 == Utils.HTTP_OK) {
+                        refreshData();
+                    } else if (msg.arg1 == Utils.HTTP_FAIL) {
+
+                    }
                 default:
                     break;
             }
         }
     }
-
 
     private class myClickEventListener implements View.OnClickListener {
 
@@ -114,6 +124,9 @@ public class MainHttpServer extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.download_button:
+                    httpRequestRunnable httpRequest = new httpRequestRunnable(Utils.BASE_CONFIG_XML_URL);
+                    Thread thread = new Thread(httpRequest);
+                    thread.start();
                     break;
                 default:
                     break;
@@ -121,69 +134,20 @@ public class MainHttpServer extends AppCompatActivity {
         }
     }
 
-    private void parseConfigXmlFromServer(InputStream inputStream){
-        XmlPullParser xmlPullParser = Xml.newPullParser();
+    private class httpRequestRunnable implements Runnable{
+        private String fileName;
 
-        try {
-            xmlPullParser.setInput(inputStream, "utf-8");
-            xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-
-            int eventType = xmlPullParser.getEventType();
-            while(eventType != XmlPullParser.END_DOCUMENT) {
-                switch (eventType) {
-                    case XmlPullParser.START_TAG:
-                        String tag = xmlPullParser.getName();
-                        if(tag.equalsIgnoreCase(Utils.TAG_USER)) {
-                            SharePreferenceUtils.put(mContext, Utils.XML_ID, xmlPullParser.getAttributeValue(null, Utils.XML_ID));
-                        } else if (tag.equalsIgnoreCase(Utils.TAG_PARAM)) {
-                            if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_PASSWORD)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_PASSWORD, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_VMPASSWORD)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_VMPASSWORD, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            }
-                        } else if (tag.equalsIgnoreCase(Utils.TAG_VARIABLE)) {
-                            if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_TOLLALLOW)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_TOLLALLOW, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_ACCOUNTCODE)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_ACCOUNTCODE, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_USERCONTEXT)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_USERCONTEXT, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_EFFECTIVE_CALLER_ID_NAME)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_EFFECTIVE_CALLER_ID_NAME, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_EFFECTIVE_CALLER_ID_NUMBER)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_EFFECTIVE_CALLER_ID_NUMBER, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_OUTBOUND_CALLER_ID_NAME)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_OUTBOUND_CALLER_ID_NAME, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_OUTBOUND_CALLER_ID_NUMBER)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_OUTBOUND_CALLER_ID_NUMBER, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            } else if(xmlPullParser.getAttributeValue(null, Utils.XML_NAME).equalsIgnoreCase(Utils.XML_CALL_GROUP)) {
-                                xmlPullParser.nextTag();
-                                SharePreferenceUtils.put(mContext, Utils.XML_CALL_GROUP, xmlPullParser.getAttributeValue(null, Utils.XML_VALUE));
-                            }
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        break;
-                    default:
-                        break;
-                }
-                eventType = xmlPullParser.nextTag();
-            }
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        public httpRequestRunnable(String fileName) {
+            this.fileName = fileName;
+        }
+        @Override
+        public void run() {
+            LogUtils.e("main", "file : " + fileName);
+            HttpUtils.submitPostData(fileName, mContext, mHanlder);
         }
     }
+
+
 
     private String getNanoHttpServiceAddress() {
 
