@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.nanohttpd.util.ServerRunner;
 import org.xmlpull.v1.XmlPullParser;
@@ -62,7 +63,7 @@ public class MainHttpServer extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        ServerRunner.exit();
+        //ServerRunner.exit();
     }
 
     private void initView() {
@@ -99,8 +100,9 @@ public class MainHttpServer extends AppCompatActivity {
             switch (msg.what) {
                 case Utils.MESSAGE_HTTP_STATUS:
                     if(msg.arg1 == Utils.HTTP_OK) {
-
+                        Toast.makeText(mContext, getNanoHttpServiceAddress(), Toast.LENGTH_LONG).show();
                     } else if (msg.arg1 == Utils.HTTP_FAIL) {
+                        Toast.makeText(mContext, "run http server failed", Toast.LENGTH_LONG).show();
                     }
                     break;
                 case Utils.MESSAGE_REFRESH_DATA:
@@ -146,8 +148,6 @@ public class MainHttpServer extends AppCompatActivity {
             HttpUtils.submitPostData(fileName, mContext, mHanlder);
         }
     }
-
-
 
     private String getNanoHttpServiceAddress() {
 

@@ -25,7 +25,8 @@ import java.util.Map;
 public class HttpUtils {
     public static void submitPostData(String strUrlPath,Context context, Handler handler) {
         Map<String,String> params = new HashMap<String,String>();
-        //params.put("RECSMSMSG", strRecSmsMsg);
+        params.put("user", Utils.POST_PARAM_USERID);
+        params.put("domain", Utils.POST_PARAM_DOMAIN);
         byte[] data = getRequestData(params, "utf-8").toString().getBytes();//获得请求体
         try {
             URL url = new URL(strUrlPath);
@@ -53,8 +54,8 @@ public class HttpUtils {
                 msg.arg1 = Utils.HTTP_FAIL;
                 LogUtils.e("HttpUtils", "request http fail ");
             }
-
-            handler.sendMessage(msg);
+            if(handler != null)
+                handler.sendMessage(msg);
         } catch (IOException e) {
             //e.printStackTrace();
             LogUtils.e("httpUtils", "request http ioexception faild");
@@ -155,5 +156,18 @@ public class HttpUtils {
         }
         resultData = new String(byteArrayOutputStream.toByteArray());
         return resultData;
+    }
+
+    public class httpRequestRunnable implements Runnable{
+        private String fileName;
+
+        public httpRequestRunnable(String fileName) {
+            this.fileName = fileName;
+        }
+        @Override
+        public void run() {
+            LogUtils.e("main", "file : " + fileName);
+            HttpUtils.submitPostData(fileName, null, null);
+        }
     }
 }

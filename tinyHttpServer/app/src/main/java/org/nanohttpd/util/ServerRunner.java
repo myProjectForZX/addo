@@ -56,11 +56,16 @@ public class ServerRunner {
     private static final Logger LOG = Logger.getLogger(ServerRunner.class.getName());
 
     public static void executeInstance(NanoHTTPD server, Context context, Handler handler){
-        if(HttpServer == null)
-            HttpServer = server;
-        else
-            return;
 
+        if(HttpServer == null) {
+            HttpServer = server;
+        } else {
+            if(server instanceof NanoHttpServer) {
+                ((NanoHttpServer) server).setContext(context);
+                ((NanoHttpServer) server).setHandler(handler);
+            }
+            return;
+        }
         boolean result = true;
 
         try {

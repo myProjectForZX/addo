@@ -42,7 +42,6 @@ public class NanoHttpServer extends NanoHTTPD{
 
         String msg;
 
-
         LogUtils.e("NanoHttpServer", "*******  uri : "  + fileName + "  user : " + parms.get(Utils.HTTP_ADDO_USER) + "  id : " + parms.get(Utils.HTTP_ADDO_USERID));
 
         if(fileName.isEmpty()) {
