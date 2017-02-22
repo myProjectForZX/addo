@@ -25,7 +25,8 @@ import java.util.Map;
 public class HttpUtils {
     public static void submitPostData(String strUrlPath,Context context, Handler handler) {
         Map<String,String> params = new HashMap<String,String>();
-        //params.put("RECSMSMSG", strRecSmsMsg);
+        params.put("user", Utils.POST_PARAM_USERID);
+        params.put("domain", Utils.POST_PARAM_DOMAIN);
         byte[] data = getRequestData(params, "utf-8").toString().getBytes();//获得请求体
         try {
             URL url = new URL(strUrlPath);
