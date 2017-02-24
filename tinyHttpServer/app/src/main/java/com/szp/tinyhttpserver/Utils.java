@@ -103,7 +103,7 @@ public class Utils {
 
     public static final int MAX_FILE_SIZE = 2 * 1024 * 1024; //2M;
 
-    public static final String BASE_CONFIG_XML_URL = "http://192.168.0.106/directory.php";
+    public static final String BASE_CONFIG_XML_URL = "http://192.168.0.106/fscp/directory.php";
     public static final String POST_PARAM_DOMAIN = "default";
     public static final String POST_PARAM_USERID = "1000";
 }
