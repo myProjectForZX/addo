@@ -28,6 +28,8 @@ public class HttpUtils {
         params.put("user", Utils.POST_PARAM_USERID);
         params.put("domain", Utils.POST_PARAM_DOMAIN);
         byte[] data = getRequestData(params, "utf-8").toString().getBytes();//获得请求体
+        Message msg = new Message();
+        msg.what = Utils.MESSAGE_DOWNLOAD_CONFIG_STATUS;
         try {
             URL url = new URL(strUrlPath);
 
@@ -43,8 +45,7 @@ public class HttpUtils {
             outputStream.write(data);
 
             int response = httpURLConnection.getResponseCode();
-            Message msg = new Message();
-            msg.what = Utils.MESSAGE_DOWNLOAD_CONFIG_STATUS;
+
             if(response == HttpURLConnection.HTTP_OK) {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 parseConfigXmlFromServer(context, inputStream);
@@ -54,11 +55,14 @@ public class HttpUtils {
                 msg.arg1 = Utils.HTTP_FAIL;
                 LogUtils.e("HttpUtils", "request http fail ");
             }
-            if(handler != null)
-                handler.sendMessage(msg);
         } catch (IOException e) {
             //e.printStackTrace();
-            LogUtils.e("httpUtils", "request http ioexception faild");
+            msg.arg1 = Utils.HTTP_FAIL;
+            LogUtils.e("httpUtils", "request http ioexception faild ");
+        } finally {
+            if(handler != null) {
+                handler.sendMessage(msg);
+            }
         }
     }
 
